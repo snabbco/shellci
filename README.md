@@ -2,7 +2,7 @@
 
 ### OpenStack 3rd party CI in 100 lines of shell
 
-*BRAND NEW WORK IN PROGRESS*
+*BRAND NEW WORK IN PROGRESS. DOES NOT RUN. BUT YOU CAN SEE THE IDEA*
 
 This is a minimalist CI that is optimized to be easy for the operator
 to understand and feel responsible for. There are no complex moving
