@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
 
-true "${CI_CONFIGURED?Forgot to source config.sh?}"
-
-# Parameters:
-#   SSH_USER: username on review.openstack.org
-#   EVENT_DIR: Directory where gerrit events will be recorded.
-
-ssh -p 29418 ${SSH_OPTS} ${SSH_USER?}@review.openstack.org gerrit stream-events |
+ssh -p 29418 ${CI_SSH_OPTS} ${CI_SSH_USER?}@review.openstack.org gerrit stream-events |
   (while read line; do
       id=$(uuidgen)
-      echo "$line" | python -mjson.tool > ${EVENT_FIREHOSE?}/$id
+      echo "$line" | python -mjson.tool > ${CI_NEW_EVENTS?}/$id
       echo "Wrote $id"
    done)
 

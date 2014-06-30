@@ -13,13 +13,13 @@ CI_INSTANCE=${CI_INSTANCE:1/1}	# CI_INSTANCE=3/10  (build server #3 of 10)
 # Derived values
 
 # Dir for new Gerrit events that are not yet filtered.
-NEW_EVENTS=${CI_DIR?}/new-events
+CI_NEW_EVENTS=${CI_DIR?}/new-events
 # Dir containing events that should trigger builds.
-QUEUED_EVENTS=${CI_DIR?}/queued-events
+CI_QUEUED_EVENTS=${CI_DIR?}/queued-events
 # Dir for events that were skipped (optional)
-SKIPPED_EVENTS=
+CI_SKIPPED_EVENTS=
 # Dir for test runs. Contains the logs and can be served directly on www.
-TESTS=${CI_DIR?}/test-runs
+CI_TESTS=${CI_DIR?}/test-runs
 
 CI_CONFIGURED=yes
 
