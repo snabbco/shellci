@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Mandatory Parameters:
+#   COMMENT: Started with PASSED or FAILED.
+#   COMMIT:  Commit ID that is being voted on.
+#
+# Optional Parameters:
+#   NO_NEGATIVE: Vote 0 instead of -1. (During debug.)
+
+vote="0"
+if echo ${COMMENT?} | grep -i '^passed'; then
+    vote="+1"
+elif echo ${COMMENT?} | grep -i '^failed'; then
+    vote="-1"
+fi
+
+ssh -p 29418 ${SSH_OPTS} ${SSH_USER?}@review.openstack.org \
+    gerrit vote --code-review ${vote} --message 

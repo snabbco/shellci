@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Transfer suitable events from EVENT_FIREHOSE to EVENT_QUEUE.
+# Matches 'patchset-created' or a 'recheck' comment on the target project.
+
+for event in $(ls -1tr ${EVENTS_IN?}); do
+    f="${EVENT_FIREHOSE?}/$event"
+    if grep -q -e "^ *\"project\": \"${PROJECT}" $f &&
+       grep -q -e "^ *\"comment\": \"recheck (no )* bug" \
+               -e "^ *\"type\": \"patchset-created\"" $f; then
+	echo "Accepted $event"
+	mv $f ${EVENT_QUEUE?}
+    else
+	[ -d "${EVENT_SKIPPED?}" ] && mv $f ${EVENT_SKIPPED} || rm $f
+    fi
+done
+
