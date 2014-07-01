@@ -8,15 +8,15 @@ shellci is a minimalist [3rd Party CI](http://ci.openstack.org/third_party.html)
 
 1. Comply with OpenStack's official 3rd party CI rules.
 2. Be a simple shell script that the operator can read and understand.
-3. Capture all state in simple text files that the operator can edit.
+3. Capture all state in plain text files that the operator can see and correct.
 
 ### How it works
 
-shellci works by creating a series of files:
+shellci works by creating a series of files for each change that needs review:
 
-* `test-runs/<uuid>/event.json` is created by the [`gerrit-stream`](gerrit-stream) script for each published changeset that should be tested and reviewed.
-* `test-runs/<uuid>/test-result.txt` is created by the [`test-run`](test-run) script based on whether the change is found to work.
-* `test-runs/<uuid>/cast-votes.txt` is created by the [`vote`](vote) script when it casts a vote on the review server. The vote and review text are based on the contents of `test-result.txt`.
+1. `test-runs/<uuid>/event.json` is created by the [`gerrit-stream`](gerrit-stream) script for each published changeset that should be tested and reviewed.
+2. `test-runs/<uuid>/test-result.txt` is created by the [`test-run`](test-run) script based on whether the change is found to work.
+3. `test-runs/<uuid>/cast-votes.txt` is created by the [`vote`](vote) script when it casts a vote on the review server. The vote and review text are based on the contents of `test-result.txt`.
 
 Ordinarily `gerrit-review` will run continuously in the background to
 collect events and then [`run-tests`](run-tests) will be run

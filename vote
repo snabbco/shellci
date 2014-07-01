@@ -12,7 +12,7 @@ url=$(cat event.json | sed -z -e 's/.*"url": "//' -e 's/".*//')
 commit=$(cat event.json | sed -z -e 's/.*"revision": "//' -e 's/".*//')
 echo "${date} ${uuid} VOTE   ${vote} ${url}"
 ssh -p 29418 ${CI_SSH_OPTS} ${CI_SSH_USER?}@review.openstack.org \
-  gerrit review --code-review "${vote}" --message \'"$(cat test-result.txt)"\' \
+  gerrit review --verified "${vote}" --message \'"$(cat test-result.txt)"\' \
   ${commit}  && (echo ${vote}    >> cast-votes.txt)
 #touch cast-votes.txt
 
