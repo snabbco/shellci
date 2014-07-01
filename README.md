@@ -39,11 +39,11 @@ Then you need to run `gerrit-stream` to collect events and, periodically, `run-t
 Here is a fragment from the [shellci.log](http://egg.snabb.co:81/shellci/shellci.log) file:
 
 ```
-2014-07-01 18:17:41 66fd7174-6082-4ea3-8daf-8395cac43f0e IGNORE openstack-dev/sandbox https://review.openstack.org/99061
-2014-07-01 18:17:41 df21a1f5-45de-422e-91dc-59df4c325709 EVENT  https://review.openstack.org/99061
-2014-07-01 18:17:42 df21a1f5-45de-422e-91dc-59df4c325709 TEST   commit 845b0669ffb450a7c7577f4fe84c8b9367820c68
-2014-07-01 18:17:42 df21a1f5-45de-422e-91dc-59df4c325709 DONE   PASSED: Test ran successfully (100)
-2014-07-01 18:17:42 df21a1f5-45de-422e-91dc-59df4c325709 VOTE   +1 https://review.openstack.org/99061
+66fd7174-6082-4ea3-8daf-8395cac43f0e IGNORE openstack-dev/sandbox https://review.openstack.org/99061
+df21a1f5-45de-422e-91dc-59df4c325709 EVENT  https://review.openstack.org/99061
+df21a1f5-45de-422e-91dc-59df4c325709 TEST   commit 845b0669ffb450a7c7577f4fe84c8b9367820c68
+df21a1f5-45de-422e-91dc-59df4c325709 DONE   PASSED: Test ran successfully (100)
+df21a1f5-45de-422e-91dc-59df4c325709 VOTE   +1 https://review.openstack.org/99061
 ```
 
 The first two messages are printed by [`gerrit-stream`](gerrit-stream)
