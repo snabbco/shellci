@@ -7,8 +7,11 @@
 shellci is a minimalist [3rd Party CI](http://ci.openstack.org/third_party.html) system. The design goals are:
 
 1. Comply with OpenStack's official 3rd party CI rules.
-2. Be a simple shell script that the operator can read and understand.
-3. Capture all state in plain text files that the operator can see and correct.
+2. Be a simple shell script that you can read and understand.
+3. Capture all state in plain text files that you can see and correct.
+
+shellci is supposed to be simple enough that you can feel responsible
+for the operation of your installation.
 
 ### How it works
 
@@ -23,6 +26,13 @@ collect events and then [`run-tests`](run-tests) will be run
 periodically to test and review any new changes. The operator is also
 able to run the scripts manually, for example to correct a wrong
 review.
+
+### Setup
+
+1. [`driver-config`](driver-config) is the configuration you write for your driver.
+2. [`standard-config`](standard-config) can be referenced to see what configuration is available and required.
+
+Then you need to run `gerrit-stream` to collect events and, periodically, `run-tests` to execute tests and post results.
 
 ### Example
 
