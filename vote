@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
+set -e
 
-# Mandatory Parameters:
-#   CI_COMMENT: Started with PASSED or FAILED.
-#   CI_COMMIT:  Commit ID that is being voted on.
-#
-# Optional Parameters:
-#   CI_NO_NEGATIVE: Vote 0 instead of -1. (During debug.)
-
+[ -f test-result.txt ] || (echo "No test-result to vote on" >&2; exit 1)
 vote="0"
-if echo ${CI_COMMENT?} | grep -i '^passed'; then
-    vote="+1"
-elif echo ${CI_COMMENT?} | grep -i '^failed'; then
-    vote="-1"
-fi
+head -1 test-result.txt | grep -q "^PASSED" && vote="+1"
+head -1 test-result.txt | grep -q "^FAILED" && vote="-1"
 
+uuid=$(basename $(pwd))
+date=$(date "+%F %T")
+url=$(cat event.json | sed -z -e 's/.*"url": "//' -e 's/".*//')
+commit=$(cat event.json | sed -z -e 's/.*"revision": "//' -e 's/".*//')
+echo "${date} ${uuid} VOTE   ${vote} ${url}"
 ssh -p 29418 ${CI_SSH_OPTS} ${CI_SSH_USER?}@review.openstack.org \
-    gerrit vote --code-review "${vote}" --message "${CI_COMMENT?}"
+  gerrit review --code-review "${vote}" --message \'"$(cat test-result.txt)"\' \
+  ${commit}  && (echo ${vote}    >> cast-votes.txt)
+#touch cast-votes.txt
+

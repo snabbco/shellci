@@ -1,0 +1,8 @@
+#!/bin/bash
+for dir in test-runs/*; do
+    if [ -d $dir ]; then
+	(cd ${dir}
+	    [ -f event.json ]      && [ ! -f test-result.txt ] && ${CI}/test-run
+	    [ -f test-result.txt ] && [ ! -f cast-votes.txt  ] && ${CI}/vote)
+    fi
+done

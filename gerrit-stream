@@ -2,8 +2,20 @@
 
 ssh -p 29418 ${CI_SSH_OPTS} ${CI_SSH_USER?}@review.openstack.org gerrit stream-events |
   (while read line; do
-      id=$(uuidgen)
-      echo "$line" | python -mjson.tool > ${CI_NEW_EVENTS?}/$id
-      echo "Wrote $id"
+      echo $line | python -mjson.tool > event.json
+      uuid=$(uuidgen)
+      project=$(cat event.json | sed -z -e 's/.*"project": "//' -e 's/".*//')
+      url=$(cat event.json | sed -z -e 's/.*"url": "//' -e 's/".*//')
+      date=$(date "+%F %T")
+      # Filter for relevance
+      if grep -q -e "^ *\"project\": \"${CI_PROJECT}" event.json &&
+         grep -q -e "^ *\"comment\": \"recheck \(no \)* bug" \
+                 -e "^ *\"type\": \"patchset-created\"" event.json; then
+          echo "${date} ${uuid} EVENT  ${url}"
+          mkdir         ${CI_TESTS}/${uuid}
+          mv event.json ${CI_TESTS}/${uuid}/
+      else
+          echo "${date} ${uuid} IGNORE ${project} ${url}"
+      fi
    done)
 

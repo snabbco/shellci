@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Set these values, either here in this file or in your environment.
+export CI_SSH_USER=${CI_SSH_USER?}     # CI_SSH_USER=myciaccount
+export CI_PROJECT=${CI_PROJECT?}       # CI_PROJECT=openstack-dev/sandbox
+export CI_URL=${CI_URL?}               # CI_URL=http://test.ci.com/home/ci/shellci/
+
+export CI_SSH_OPTS=${CI_SSH_OPTS}      # CI_SSH_OPTS=-i $HOME/my_id_rsa
+export CI_DEVSTACK=${CI_DEVSTACK:demo} # CI_DEVSTACK=script-that-runs-devstack
+export CI_TEMPEST=${CI_TEMPEST:demo}   # CI_TEMPEST=script-that-runs-tempest
+export CI_NODES=${CI_NODES:1}          # CI_NODES=10  (how many shellci nodes)
+export CI_SHARD=${CI_SHARD:1}          # CI_SHARD=7   (number of this shellci node)
+export CI_DRIVER_TEST=${CI_DRIVER_TEST?} # CI_DRIVER_TEST=devstack-and-tempest.sh
+
+# Dir for new Gerrit events that are not yet filtered.
+export CI_NEW_EVENTS=${CI?}/new-events
+# Dir containing events that should trigger builds.
+export CI_QUEUED_EVENTS=${CI?}/queued-events
+# Dir for events that were skipped (optional)
+export CI_SKIPPED_EVENTS=
+# Dir for test runs. Contains the logs and can be served directly on www.
+export CI_TESTS=${CI?}/test-runs

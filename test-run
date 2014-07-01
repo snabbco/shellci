@@ -1,0 +1,38 @@
+#!/bin/bash
+# Run a test and create ./test-result.txt
+set -e
+
+uuid=$(basename $(pwd))
+
+status="none"
+# This function will be called at exit to record what happened.
+record_result () {
+    (case $status in                 # Interpret test script exit code
+        100) echo "PASSED: Test ran successfully (100)"          ;;
+        101) echo "FAILURE: Test failed with cause (101)"        ;;
+        102) echo "SKIPPED: Test intentionally skipped (102)"    ;;
+        103) echo "REVIEW: Test result needs manual review (103)";;
+        *)   echo "HAZARD: Test exited with unrecognized status ($status)" ;;
+     esac) > test-result.txt
+    echo >> test-result.txt
+    echo "Log: ${CI_URL?}/test-runs/$(basename $(pwd))" >> test-result.txt
+    echo >> test-result.txt
+    [ -f review-comment ] && cat review-comment >> test-result.txt
+    date=$(date "+%F %T")
+    commit=$(cat event.json | sed -z -e 's/.*"revision": "//' -e 's/".*//')
+    echo "${date} ${uuid} DONE   $(head -1 test-result.txt)"
+    exit 0
+}
+trap record_result EXIT
+
+date=$(date "+%F %T")
+commit=$(cat event.json | sed -z -e 's/.*"revision": "//' -e 's/".*//')
+echo "${date} ${uuid} TEST   commit ${commit}"
+
+[ -f event.json ]
+( flock -xn 9 || exit 1 ) 9>build.lock
+set +e
+${CI_DRIVER_TEST?}
+status=$?
+
+

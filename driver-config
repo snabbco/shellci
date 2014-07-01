@@ -1,0 +1,5 @@
+CI_SSH_USER=snabb-nfv-ci
+CI_SSH_OPTS="-i $HOME/id_snabb-nfv-ci"
+CI_PROJECT=openstack-dev/sandbox
+CI_URL=http://egg.snabb.co:81/shellci
+CI_DRIVER_TEST=$HOME/hacking/github/shellci/snabb-nfv-driver-test
