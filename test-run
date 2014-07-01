@@ -9,7 +9,7 @@ status="none"
 record_result () {
     (case $status in                 # Interpret test script exit code
         100) echo "PASSED: Test ran successfully (100)"          ;;
-        101) echo "FAILURE: Test failed with cause (101)"        ;;
+        101) echo "FAILED: Test failed with cause (101)"        ;;
         102) echo "SKIPPED: Test intentionally skipped (102)"    ;;
         103) echo "REVIEW: Test result needs manual review (103)";;
         *)   echo "HAZARD: Test exited with unrecognized status ($status)" ;;
