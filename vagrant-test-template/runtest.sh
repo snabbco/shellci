@@ -18,11 +18,6 @@ sed -e "s;%neutron_branch%;${neutron_branch:-master};" \
     -e "s;%nova_branch%;${nova_branch:-master};" \
     < local.conf.template > local.conf
 
-echo "Destroying old VM with id ${VM_ID} (if it exists)"
-vagrant destroy -f
-vboxmanage controlvm ${VM_ID} poweroff
-vboxmanage unregistervm ${VM_ID} --delete
-vagrant destroy -f
 echo "Starting VM with id ${VM_ID}"
 vagrant up
 # Set exit status as shellci expects it
