@@ -3,11 +3,11 @@ source ${CI}/config
 
 echo "Connecting to review.openstack.org.."
 ssh -p 29418 review.openstack.org gerrit stream-events |
-  (while read line; do
+  (while read -r line; do
       uuid=$(uuidgen)
       stamp=$(date "+%F %T")
       event=$(mktemp)
-      echo $line | python -mjson.tool > ${event}
+      printf "%s" ${line} | python -mjson.tool > ${event}
       if [ $# != 0 ]; then
           # XXX Really long events seem to get split/truncated by the
           # 'read' above. That triggers this error. This MAY not be an
