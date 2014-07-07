@@ -2,7 +2,7 @@
 
 ### OpenStack 3rd party CI in 100 lines of shell
 
-*BRAND NEW WORK IN PROGRESS*
+*BRAND NEW WORK. IN PROGRESS. MAYBE ALREADY OVER CODE BUDGET*
 
 shellci is a minimalist [3rd Party CI](http://ci.openstack.org/third_party.html) system. The design goals are:
 
@@ -42,9 +42,9 @@ shellci works by creating a series of files for each change that needs review:
 2. `tests/<date>/<uuid>/test-result.txt` is created by the [`test-run`](test-run) script based on whether the change is found to work.
 3. `tests/<date>/<uuid>/cast-votes.txt` is created by the [`vote`](vote) script when it casts a vote on the review server. The vote and review text are based on the contents of `test-result.txt`.
 
-shellci is started with a number of parallel ([sharded](http://en.wikipedia.org/wiki/Shard_(database_architecture))) test processes:
-
 ### How to shellci start and stop shellci
+
+shellci is started with a number of parallel ([sharded](http://en.wikipedia.org/wiki/Shard_(database_architecture))) test processes:
 
 ```
 $ ./start 4
@@ -55,14 +55,13 @@ Starting script for shard 2
 Starting script for shard 3
 ```
 
-Now the gerrit-stream from `review.openstack.org` is being monitored
-and four parallel test processes are continuously running tests.
+`gerrit-stream` monitors `review.openstack.org` for events that should trigger builds. `shard <n>` polls for new events belonging to a specific shard and executes a test.
 
 The processes are all logging into `logs/` and the builds are being
 executed in `tests/` (with logs retained for future reference).
 
-Then when you have had enough you stop (and stop *hard* to avoid
-leaving dangling Vagrants):
+When you have had enough you stop the processes (and stop them *hard*
+to avoid leaving dangling Vagrants):
 
 ```
 $ ./stop
