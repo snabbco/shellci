@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+source ${CI?}/config
 
 [ -f test-result.txt ] || (echo "No test-result to vote on" >&2; exit 1)
 vote="0"
@@ -10,9 +11,13 @@ uuid=$(basename $(pwd))
 date=$(date "+%F %T")
 url=$(cat event.json | sed -z -e 's/.*"url": "//' -e 's/".*//')
 commit=$(cat event.json | sed -z -e 's/.*"revision": "//' -e 's/".*//')
-echo "${date} ${uuid} VOTE   ${vote} ${url}"
-ssh -p 29418 ${CI_SSH_OPTS} ${CI_SSH_USER?}@review.openstack.org \
-  gerrit review --verified "${vote}" --message \'"$(cat test-result.txt)"\' \
-  ${commit}  && (echo ${vote}    >> cast-votes.txt)
-#touch cast-votes.txt
+if [ "${CI_ENABLE_VOTING}" == "yes" ]; then
+    echo "${date} ${uuid} VOTE   ${vote} ${url}" >> ${CI?}/log/activity.log
+    ssh -p 29418 ${CI_SSH_USER?}@review.openstack.org \
+	gerrit review --verified "${vote}" --message \'"$(cat test-result.txt)"\' \
+	${commit}  && (echo ${vote} >> cast-votes.txt)
+else
+    echo "${date} ${uuid} NOVOTE ${vote} ${url}" >> ${CI?}/log/activity.log
+    echo "skipped ${vote}" >> cast-votes.txt
+fi
 
