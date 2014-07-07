@@ -26,7 +26,8 @@ ssh -p 29418 review.openstack.org gerrit stream-events |
                   -e "^ *\"type\": \"patchset-created\"" ${event}); then
           [ -d ${CI}/tests/${date} ] || mkdir -p ${CI}/tests/${date}
           cp -r ${CI_TEST_CASE?} ${CI}/tests/${date}/${uuid}
-          mv ${event} ${CI}/tests/${date}/${uuid}/event.json
+          cp ${event} ${CI}/tests/${date}/${uuid}/event.json
+          rm ${event}
           echo "${stamp} ${uuid} EVENT  ${url}" | tee -a ${CI?}/log/activity.log
       else
           rm ${event}
