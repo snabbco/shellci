@@ -2,7 +2,7 @@
 source ${CI}/config
 
 echo "Connecting to review.openstack.org.."
-ssh -p 29418 ${CI_SSH_OPTS} ${CI_SSH_USER?}@review.openstack.org gerrit stream-events |
+ssh -p 29418 review.openstack.org gerrit stream-events |
   (while read line; do
       uuid=$(uuidgen)
       stamp=$(date "+%F %T")

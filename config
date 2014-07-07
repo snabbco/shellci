@@ -1,7 +1,5 @@
-# SSH username of your CI account on review.openstack.org
-export CI_SSH_USER=snabb-nfv-ci
 # Project you are interested in testing (regex)
-export CI_PROJECT=openstack-dev/sandbox
+export CI_PROJECT=openstack/neutron
 # Public URL of this directory (for links to logs)
 export CI_URL=http://horgen.snabb.co:81/shellci
 # Test case will be copied and then executed like this:
@@ -13,4 +11,4 @@ export CI_TEST_CASE=${CI}/vagrant-test-template
 #export CI_ENABLE_VOTING=yes
 # Uncommon this line to trigger on every single event from gerrit
 # WARNING: don't do this with voting enabled :-)
-export CI_PROMISC=yes
+#export CI_PROMISC=yes

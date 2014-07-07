@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Post a vote to review.openstack.org for the test in the current directory.
+# The vote is based on ./event.json and ./test-result.txt
+
 set -e
 source ${CI?}/config
 
@@ -13,7 +16,7 @@ url=$(cat event.json | sed -z -e 's/.*"url": "//' -e 's/".*//')
 commit=$(cat event.json | sed -z -e 's/.*"revision": "//' -e 's/".*//')
 if [ "${CI_ENABLE_VOTING}" == "yes" ]; then
     echo "${date} ${uuid} VOTE   ${vote} ${url}" >> ${CI?}/log/activity.log
-    ssh -p 29418 ${CI_SSH_USER?}@review.openstack.org \
+    ssh -p 29418 review.openstack.org \
 	gerrit review --verified "${vote}" --message \'"$(cat test-result.txt)"\' \
 	${commit}  && (echo ${vote} >> cast-votes.txt)
 else
