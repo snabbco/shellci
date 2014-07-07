@@ -21,13 +21,13 @@ ssh -p 29418 review.openstack.org gerrit stream-events |
       date=$(date "+%F")
       # Filter for relevance
       if [ "${CI_PROMISC}" == "yes" ] ||
-         (grep -q -e "^ *\"project\": \"${CI_PROJECT}" ${event} &&
+         (grep -q -e "^ *\"project\": \"${CI_PROJECT?}" ${event} &&
           grep -q -e "^ *\"comment\": \"recheck \(no \)* bug" \
                   -e "^ *\"type\": \"patchset-created\"" ${event}); then
           [ -d ${CI}/tests/${date} ] || mkdir -p ${CI}/tests/${date}
           cp -r ${CI_TEST_CASE?} ${CI}/tests/${date}/${uuid}
           mv ${event} ${CI}/tests/${date}/${uuid}/event.json
-          echo "${stamp} ${uuid} EVENT  ${url}" | tee >> ${CI?}/log/activity.log
+          echo "${stamp} ${uuid} EVENT  ${url}" | tee -a ${CI?}/log/activity.log
       else
           rm ${event}
           echo "${stamp} ${uuid} no test needed for event - project=${project} url=${url}"
