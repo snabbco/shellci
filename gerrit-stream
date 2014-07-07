@@ -1,21 +1,36 @@
 #!/usr/bin/env bash
+source ${CI}/config
 
+echo "Connecting to review.openstack.org.."
 ssh -p 29418 ${CI_SSH_OPTS} ${CI_SSH_USER?}@review.openstack.org gerrit stream-events |
   (while read line; do
-      echo $line | python -mjson.tool > event.json
       uuid=$(uuidgen)
-      project=$(cat event.json | sed -z -e 's/.*"project": "//' -e 's/".*//')
-      url=$(cat event.json | sed -z -e 's/.*"url": "//' -e 's/".*//')
-      date=$(date "+%F %T")
+      stamp=$(date "+%F %T")
+      event=$(mktemp)
+      echo $line | python -mjson.tool > ${event}
+      if [ $# != 0 ]; then
+          # XXX Really long events seem to get split/truncated by the
+          # 'read' above. That triggers this error. This MAY not be an
+          # immediate problem because the events long enough to
+          # trigger this bug are probably not one that we need to
+          # trigger tests from.
+          echo "${stamp} ${uuid} got malformed event."
+      fi
+      project=$(cat ${event} | sed -z -e 's/.*"project": "//' -e 's/".*//')
+      url=$(cat ${event} | sed -z -e 's/.*"url": "//' -e 's/".*//')
+      date=$(date "+%F")
       # Filter for relevance
-      if grep -q -e "^ *\"project\": \"${CI_PROJECT}" event.json &&
-         grep -q -e "^ *\"comment\": \"recheck \(no \)* bug" \
-                 -e "^ *\"type\": \"patchset-created\"" event.json; then
-          echo "${date} ${uuid} EVENT  ${url}"
-          mkdir         ${CI_TESTS}/${uuid}
-          mv event.json ${CI_TESTS}/${uuid}/
+      if [ "${CI_PROMISC}" == "yes" ] ||
+         (grep -q -e "^ *\"project\": \"${CI_PROJECT}" ${event} &&
+          grep -q -e "^ *\"comment\": \"recheck \(no \)* bug" \
+                  -e "^ *\"type\": \"patchset-created\"" ${event}); then
+          [ -d ${CI}/tests/${date} ] || mkdir -p ${CI}/tests/${date}
+          cp -r ${CI_TEST_CASE?} ${CI}/tests/${date}/${uuid}
+          mv ${event} ${CI}/tests/${date}/${uuid}/event.json
+          echo "${stamp} ${uuid} EVENT  ${url}" | tee >> ${CI?}/log/activity.log
       else
-          echo "${date} ${uuid} IGNORE ${project} ${url}"
+          rm ${event}
+          echo "${stamp} ${uuid} no test needed for event - project=${project} url=${url}"
       fi
    done)
 
