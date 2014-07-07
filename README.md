@@ -15,7 +15,7 @@ for the operation of your installation.
 
 ### What shellci looks like
 
-The `logs/activity.log` from a healthy running shellci looks something like this:
+The `log/activity.log` from a healthy running shellci looks something like this:
 
 ```
 d130e688 EVENT  https://review.openstack.org/93398
@@ -41,15 +41,15 @@ shellci is started with a number of parallel ([sharded](http://en.wikipedia.org/
 ```
 $ ./start 4
 Starting gerrit-stream
-Starting script for shard 0
-Starting script for shard 1
-Starting script for shard 2
-Starting script for shard 3
+Starting shard0
+Starting shard1
+Starting shard2
+Starting shard3
 ```
 
 Process `gerrit-stream` monitors `review.openstack.org` for events that should trigger builds. Process `shard <n>` polls for new events that hash onto a particular shard and tests them.
 
-The processes are all logging into `logs/` and the builds are being
+The processes are all logging into `log/` and the builds are being
 executed in `tests/` (with logs retained for future reference).
 
 When you have had enough you stop the processes (and stop them *hard*
