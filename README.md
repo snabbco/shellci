@@ -34,15 +34,7 @@ d130e688 VOTE   +1 https://review.openstack.org/93398
 97dfae69 VOTE   -1 https://review.openstack.org/104917
 ```
 
-### How shellci state is stored on disk
-
-shellci works by creating a series of files for each change that needs review:
-
-1. `tests/<date>/<uuid>/event.json` is created by the [`gerrit-stream`](gerrit-stream) script for each published changeset that should be tested and reviewed.
-2. `tests/<date>/<uuid>/test-result.txt` is created by the [`test-run`](test-run) script based on whether the change is found to work.
-3. `tests/<date>/<uuid>/cast-votes.txt` is created by the [`vote`](vote) script when it casts a vote on the review server. The vote and review text are based on the contents of `test-result.txt`.
-
-### How to shellci start and stop shellci
+### How to start and stop shellci
 
 shellci is started with a number of parallel ([sharded](http://en.wikipedia.org/wiki/Shard_(database_architecture))) test processes:
 
@@ -55,7 +47,7 @@ Starting script for shard 2
 Starting script for shard 3
 ```
 
-`gerrit-stream` monitors `review.openstack.org` for events that should trigger builds. `shard <n>` polls for new events belonging to a specific shard and executes a test.
+Process `gerrit-stream` monitors `review.openstack.org` for events that should trigger builds. Process `shard <n>` polls for new events that hash onto a particular shard and tests them.
 
 The processes are all logging into `logs/` and the builds are being
 executed in `tests/` (with logs retained for future reference).
@@ -91,6 +83,14 @@ to run at all for some reason).
 
 You can either customize the provided Vagrant example or replace it
 entirely.
+
+### How shellci state is stored on disk
+
+shellci works by creating a series of files for each change that needs review:
+
+1. `tests/<date>/<uuid>/event.json` is created by the [`gerrit-stream`](gerrit-stream) script for each published changeset that should be tested and reviewed.
+2. `tests/<date>/<uuid>/test-result.txt` is created by the [`test-run`](test-run) script based on whether the change is found to work.
+3. `tests/<date>/<uuid>/cast-votes.txt` is created by the [`vote`](vote) script when it casts a vote on the review server. The vote and review text are based on the contents of `test-result.txt`.
 
 ### The messy details
 
