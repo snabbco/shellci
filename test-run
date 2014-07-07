@@ -1,4 +1,7 @@
 #!/bin/bash
+# Run a test in the current directory.
+# Execute ./runtest.sh and store the result in ./test-result.txt
+
 # Run a test and create ./test-result.txt
 set -e
 source ${CI}/config
@@ -27,7 +30,8 @@ trap record_result EXIT
 
 date=$(date "+%F %T")
 ref=$(cat event.json | sed -z -e 's/.*"ref": "//' -e 's/".*//')
-echo "${date} ${uuid} TEST   ${ref}" >> ${CI?}/log/activity.log
+project=$(cat event.json | sed -z -e 's/.*"project": "//' -e 's/".*//')
+echo "${date} ${uuid} TEST   ${project} ${ref}" >> ${CI?}/log/activity.log
 
 [ -f event.json ]
 ( flock -xn 9 || exit 1 ) 9>build.lock
