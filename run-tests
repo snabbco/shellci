@@ -6,21 +6,25 @@ if [ $# == 2 ]; then
 else
     echo "Usage: $0 <my-shard> <number-of-shards>"
 fi
-for dir in $(find tests -type d); do
-    if [ -f ${dir}/event.json ]; then
-        (cd ${dir}
-         hash=$(cksum <event.json | awk "{ print \$1 % ${CI_SHARDS?} }")
-         if [ "${hash}" == "${CI_SHARD}" ]; then
-	     # Run test if needed
-             if [ ! -f test-result.txt ]; then
-		 cp -r ${CI_TEST_CASE}/* .
-		 ${CI}/test-run 2>&1 | tee test-run.log
-	     fi
-	     # Cast vote if needed
-	     if [ -f test-result.txt ] && [ ! -f cast-votes.txt  ]; then
-		 ${CI}/vote
-	     fi
-	 fi)
-    fi
+while true; do
+    for dir in $(find tests -type d); do
+        if [ -f ${dir}/event.json ]; then
+            (cd ${dir}
+                hash=$(cksum <event.json | awk "{ print \$1 % ${CI_SHARDS?} }")
+                if [ "${hash}" == "${CI_SHARD}" ]; then
+                    # Run test if needed
+                    if [ ! -f test-result.txt ]; then
+                        cp -r ${CI_TEST_CASE}/* .
+                        ${CI}/test-run 2>&1 | tee test-run.log
+                    fi
+                    # Cast vote if needed
+                    if [ -f test-result.txt ] && [ ! -f cast-votes.txt  ]; then
+                        ${CI}/vote
+                    fi
+                fi
+            )
+        fi
+    done
     echo "$(date) Loop.."; sleep 5
 done
+
