@@ -1,0 +1,31 @@
+#!/bin/bash
+# Run the whole shell CI.
+if [ $# != 1 ]; then
+    cat > /dev/stderr <<EOF
+Usage: $0 <number-of-shards>
+
+number-of-shards is the number of separate build-and-test processes
+that will run. Each event will be assigned to one process based on a
+hash value.
+Sharding: http://en.wikipedia.org/wiki/Shard_(database_architecture)
+EOF
+    exit 1
+fi
+
+shards=$1
+
+export CI=$(dirname $(readlink -f $0))
+source ${CI}/config
+
+screen -S shellci -X quit
+screen -S shellci -d -m
+screen -S shellci -X deflog on
+screen -S shellci -X logfile ${CI}/log/%t.log
+screen -S shellci -X setenv CI ${CI}
+echo "Starting gerrit-stream"
+screen -S shellci -X screen -t gerrit-stream ${CI}/gerrit-stream
+for shard in $(seq 0 $[${shards}-1]); do
+    echo "Starting script for shard ${shard}"
+    screen -S shellci -X screen -t "shard${shard}" ${CI}/run-tests $shard $shards
+done
+
