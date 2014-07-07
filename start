@@ -17,7 +17,7 @@ shards=$1
 export CI=$(dirname $(readlink -f $0))
 source ${CI}/config
 
-screen -S shellci -X quit
+screen -S shellci -X quit 2>/dev/null
 screen -S shellci -d -m
 screen -S shellci -X deflog on
 screen -S shellci -X logfile ${CI}/log/%t.log
