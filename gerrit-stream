@@ -7,13 +7,9 @@ ssh -p 29418 review.openstack.org gerrit stream-events |
       uuid=$(uuidgen)
       stamp=$(date "+%F %T")
       event=$(mktemp)
+      chmod a+r ${event} # mktemp sets user-only
       printf "%s" ${line} | python -mjson.tool > ${event}
       if [ $# != 0 ]; then
-          # XXX Really long events seem to get split/truncated by the
-          # 'read' above. That triggers this error. This MAY not be an
-          # immediate problem because the events long enough to
-          # trigger this bug are probably not one that we need to
-          # trigger tests from.
           echo "${stamp} ${uuid} got malformed event."
       fi
       project=$(cat ${event} | sed -z -e 's/.*"project": "//' -e 's/".*//')
@@ -26,8 +22,7 @@ ssh -p 29418 review.openstack.org gerrit stream-events |
                   -e "^ *\"type\": \"patchset-created\"" ${event}); then
           [ -d ${CI}/tests/${date} ] || mkdir -p ${CI}/tests/${date}
           cp -r ${CI_TEST_CASE?} ${CI}/tests/${date}/${uuid}
-          cp ${event} ${CI}/tests/${date}/${uuid}/event.json
-          rm ${event}
+          mv ${event} ${CI}/tests/${date}/${uuid}/event.json
           echo "${stamp} ${uuid} EVENT  ${url}" | tee -a ${CI?}/log/activity.log
       else
           rm ${event}
