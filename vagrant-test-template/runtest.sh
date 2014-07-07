@@ -1,6 +1,8 @@
 #!/bin/bash
 VM_ID=shellci${CI_SHARD}
 
+trap "vagrant destroy -f; find . -type l -xtype l -exec rm {} +" EXIT
+
 # Check out the version that should be tested.
 # XXX Support all projects (?)
 if [ -f event.json ]; then
@@ -23,5 +25,6 @@ vboxmanage unregistervm ${VM_ID} --delete
 vagrant destroy -f
 echo "Starting VM with id ${VM_ID}"
 vagrant up
-echo "Destroying used vagrant"
-vagrant destroy -f
+# Set exit status as shellci expects it
+grep -q PASSED tempest.log && exit 100
+grep -q FAILED tempest.log && exit 101
