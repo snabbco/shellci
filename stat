@@ -1,0 +1,3 @@
+#!/bin/bash
+[ $# == 1 ] && dir=$1 || dir=tests
+find $dir -name test-result.txt -exec head -1 {} \; | sed 's/ .*//' | sort | uniq -c
