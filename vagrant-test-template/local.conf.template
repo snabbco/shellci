@@ -6,3 +6,6 @@ SERVICE_PASSWORD=$ADMIN_PASSWORD
 SERVICE_TOKEN=a682f596-76f3-11e3-b3b2-e716f9080d50
 LOGFILE=/vagrant/devstack.log
 SCREEN_LOGDIR=/vagrant/screen-log
+
+NOVA_BRANCH=%nova_branch%
+NEUTRON_BRANCH=%neutron_branch%
