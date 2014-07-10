@@ -1,6 +1,7 @@
 #!/bin/bash
 # Run a test in the current directory.
 # Execute ./runtest.sh and store the result in ./test-result.txt
+# If the test fails for an unknown reason then schedule a rerun.
 
 # Run a test and create ./test-result.txt
 set -e
@@ -16,7 +17,7 @@ record_result () {
         101) echo "FAILED: Test failed with cause (101)"        ;;
         102) echo "SKIPPED: Test intentionally skipped (102)"    ;;
         103) echo "REVIEW: Test result needs manual review (103)";;
-        *)   echo "HAZARD: Test exited with unrecognized status ($status)" ;;
+        *)   echo "HAZARD: Test exited with unrecognized status ($status)";;
      esac) > test-result.txt
     echo >> test-result.txt
     echo "Log: ${CI_URL?}/tests/$(basename $(pwd))" >> test-result.txt
@@ -24,6 +25,21 @@ record_result () {
     [ -f review-comment ] && cat review-comment >> test-result.txt
     date=$(date "+%F %T")
     echo "${date} ${uuid} DONE   $(head -1 test-result.txt)" >> ${CI?}/log/activity.log
+    # Consider retriggering the same event in case of unexpected error
+    if head -1 test-result.txt | grep -q HAZARD; then
+	retries=0
+	[ -f previous.log ] && retries=$(grep -c . previous.log)
+	if [ $retries -lt 5 ]; then
+	    newuuid=$(uuidgen)
+	    mkdir ../${newuuid}
+	    cp event.json ../${newuuid}/
+	    [ -f previous.log ] && cp previous.log ../${newuuid}/
+	    echo ${uuid} >> ../${newuuid}/previous.log
+	    echo "${date} ${uuid} RETRY  #${retries} ${newuuid}" >> ${CI?}/log/activity.log
+	else
+	    echo "${date} ${uuid} NOMORE $retries retries" >> ${CI?}/log/activity.log
+	fi
+    fi
     exit 0
 }
 trap record_result EXIT
